@@ -11,16 +11,16 @@ const blogSchema = new mongoose.Schema({
   body: {
     type: String,
   },
-  photos: {
-    type: [String],
-  },
-  tags: {
-    type: [String],
-  },
+  photos: [String],
+  tags: [String],
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  likers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }],
 });
 
 const blogModel = mongoose.model('Blog', blogSchema);
