@@ -12,7 +12,7 @@ app.use(express.json());
 app.use('/', routes);
 
 app.use((err, req, res, next) => {
-  res.json(err);
+  res.json(err.message);
 });
 
 const {PORT = 3000} = process.env;

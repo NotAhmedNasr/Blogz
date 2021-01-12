@@ -1,22 +1,57 @@
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/User');
+const {promisify} = require('util');
+const jwt = require('jsonwebtoken');
 
-const create = async function(user) {
-  return await User.create(user);
+const asyncSign = promisify(jwt.sign);
+
+const SECRET = JSON.parse(fs.readFileSync(
+    path.join(__dirname, '..', 'private', 'secrets', 'secret.json'),
+    {encoding: 'utf8'},
+));
+
+const create = async function(newUser) {
+  const user = await User.create(newUser);
+  return await signUserWithJwt(user);
+};
+
+const signUserWithJwt = async function(user) {
+  const token = await asyncSign({
+    username: user.username,
+    id: user.id,
+  }, SECRET.secret);
+  return {...user.toJSON(), token};
 };
 
 const login = async function({username, password}) {
-  const user = await User.find({username: username}).exec();
+  const user = await User.findOne({username}).exec();
   if (!user) {
-    throw new Error('UNAUTHENTICATED USER');
+    throw new Error('Unauthenticated');
   }
-  try {
-    const valid = await user.validatePassword(password);
-  } catch (error) {
-    throw new Error('UNAUTHENTICATED USER');
+  const validPassword = await user.validatePassword(password);
+  if (!validPassword) {
+    throw new Error('Unauthenticated');
   }
+  return await signUserWithJwt(user);
+};
+
+const getUserById = async function(id) {
+  return await User.findById(id).exec();
+};
+
+const deleteUserById = async function(id) {
+  return await User.findByIdAndDelete(id).exec();
+};
+
+const updateData = async function(id, data) {
+  return await User.findByIdAndUpdate(id, data);
 };
 
 module.exports = {
   create,
   login,
+  getUserById,
+  deleteUserById,
+  updateData,
 };
