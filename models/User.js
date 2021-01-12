@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   email: { // Must match the email pattern
     type: String,
     required: true,
+    unique: true,
   },
   fullname: {
     type: String,
@@ -36,6 +37,14 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
+}, {
+  toJSON: {
+    transform: function(doc, ret, options) {
+      delete ret.password;
+      delete ret._id;
+      return ret;
+    },
+  },
 });
 
 userSchema.pre('save', async function(next) {
