@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -37,7 +36,7 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
-}, {
+}, { // schema options
   toJSON: {
     transform: function(doc, ret, options) {
       delete ret.password;
@@ -45,7 +44,13 @@ const userSchema = new mongoose.Schema({
       return ret;
     },
   },
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+  },
 });
+
+const userModel = mongoose.model('User', userSchema);
 
 userSchema.pre('save', async function(next) {
   try {
@@ -56,10 +61,17 @@ userSchema.pre('save', async function(next) {
   }
 });
 
+userSchema.pre('findOneAndUpdate', async function(next) {
+  try {
+    this._update.password = await bcrypt.hash(this._update.password, 10);
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
 userSchema.methods.validatePassword = async function(password) {
   return await bcrypt.compare(password, this.password);
 };
-
-const userModel = mongoose.model('User', userSchema);
 
 module.exports = userModel;

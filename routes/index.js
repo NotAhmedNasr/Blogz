@@ -8,6 +8,6 @@ const blogRouter = require('./blog');
 const routes = express.Router();
 
 routes.use('/users', userRouter);
-routes.use('./blogs', blogRouter);
+routes.use('/blogs', blogRouter);
 
 module.exports = routes;
