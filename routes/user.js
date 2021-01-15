@@ -45,7 +45,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 router.delete('/', async (req, res, next) => {
-  const {id} = req.user;
+  const id = req.userId;
   try {
     const deletedUser = await deleteUserById(id);
     res.json(deletedUser);
@@ -55,7 +55,7 @@ router.delete('/', async (req, res, next) => {
 });
 
 router.patch('/', async (req, res, next) => {
-  const {id} = req.user;
+  const id = req.userId;
   const {body} = req;
   try {
     const updated = await updateData(id, body);
