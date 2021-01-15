@@ -18,9 +18,8 @@ const create = async function(newUser) {
 
 const signUserWithJwt = async function(user) {
   const token = await asyncSign({
-    username: user.username,
     id: user.id,
-  }, SECRET.secret);
+  }, SECRET.secret, {expiresIn: '1h'});
   return {...user.toJSON(), token};
 };
 

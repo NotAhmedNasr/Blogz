@@ -14,11 +14,8 @@ const checkIfUserLoggedIn = async (req, res, next) => {
   const {token} = req.headers;
   try {
     const payload = await verifyAsync(token, SECRET);
-    const user = {
-      username: payload.username,
-      id: payload.id,
-    };
-    req.user = user;
+
+    req.userId = payload.id;
     next();
   } catch (error) {
     next(error);
