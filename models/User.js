@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     maxlength: 50,
     minlength: 2,
-    index: true,
     required: true,
   },
   dob: { // Date of birth
@@ -50,7 +49,9 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const userModel = mongoose.model('User', userSchema);
+userSchema.methods.validatePassword = async function(password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 userSchema.pre('save', async function(next) {
   try {
@@ -70,8 +71,8 @@ userSchema.pre('findOneAndUpdate', async function(next) {
   }
 });
 
-userSchema.methods.validatePassword = async function(password) {
-  return await bcrypt.compare(password, this.password);
-};
+userSchema.index({'fullname': 'text'});
+
+const userModel = mongoose.model('User', userSchema);
 
 module.exports = userModel;

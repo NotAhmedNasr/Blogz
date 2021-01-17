@@ -28,6 +28,7 @@ const login = async function({username, password}) {
   if (!user) {
     throw new Error('Unauthenticated');
   }
+  debugger;
   const validPassword = await user.validatePassword(password);
   if (!validPassword) {
     throw new Error('Unauthenticated');
