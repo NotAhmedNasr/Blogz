@@ -2,7 +2,8 @@ const express = require('express');
 const formidable = require('formidable');
 const path = require('path');
 
-const {getAll, create, edit, deleteById} = require('../controllers/blog');
+const {getAll, create, edit, deleteById, search} =
+  require('../controllers/blog');
 const {checkIfUserLoggedIn} = require('../middlewares/Auth');
 
 // eslint-disable-next-line new-cap
@@ -30,16 +31,17 @@ router.post('/upload', (req, res, next) => {
       next(err);
       return;
     }
-    res.send('Uploaded!!');
+    res.status(200).send('Uploaded!!');
   });
 });
 
+// make new blog
 router.post('/', async (req, res, next) => {
   const {body, userId} = req;
   body.author = userId;
   try {
     const blog = await create(body);
-    res.json(blog);
+    res.status(201).json(blog);
   } catch (error) {
     next(error);
   }
@@ -50,7 +52,7 @@ router.patch('/:id', async (req, res, next) => {
   const {body, userId} = req;
   try {
     const blog = await edit(body, blogId, userId);
-    res.json(blog);
+    res.status(200).json(blog);
   } catch (error) {
     next(error);
   }
@@ -61,7 +63,17 @@ router.delete('/:id', async (req, res, next) => {
   const {userId} = req;
   try {
     const result = await deleteById(blogId, userId);
-    res.json(result);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/search', async (req, res, next) => {
+  const {query} = req;
+  try {
+    const results = await search(query);
+    res.status(200).json(results);
   } catch (error) {
     next(error);
   }

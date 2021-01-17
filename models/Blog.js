@@ -6,7 +6,6 @@ const blogSchema = new mongoose.Schema({
     required: true,
     minlength: 1,
     maxlength: 256,
-    index: true,
   },
   body: {
     type: String,
@@ -32,6 +31,7 @@ const blogSchema = new mongoose.Schema({
 
 blogSchema.index({'created_at': 1});
 blogSchema.index({'tags': 1});
+blogSchema.index({'title': 'text'});
 
 const blogModel = mongoose.model('Blog', blogSchema);
 
