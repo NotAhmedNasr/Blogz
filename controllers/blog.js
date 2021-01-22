@@ -54,6 +54,10 @@ const search = async function({title, tag, author, page, count}) {
       {skip: (+page * +count), limit: +count}).exec();
 };
 
+const like = async function(update, id) {
+  return await Blog.findByIdAndUpdate(id, update).exec();
+};
+
 module.exports = {
   getAll,
   create,
@@ -61,4 +65,5 @@ module.exports = {
   deleteById,
   search,
   getFollowing,
+  like,
 };
