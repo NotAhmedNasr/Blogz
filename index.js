@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const routes = require('./routes');
 const errorHandler = require('./middlewares/Error');
@@ -9,6 +10,7 @@ mongoose.connect('mongodb://localhost:27017/blogs', {useNewUrlParser: true, useU
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.use('/', routes);
 
