@@ -1,8 +1,8 @@
 const express = require('express');
+
 const {
   create, login, getUserById, deleteUserById, updateData, follow, unfollow,
-} =
-  require('../controllers/user');
+} = require('../controllers/user');
 const {checkIfUserLoggedIn} = require('../middlewares/Auth');
 
 
@@ -47,6 +47,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
+// delete user
 router.delete('/', async (req, res, next) => {
   const id = req.userId;
   try {
@@ -57,6 +58,7 @@ router.delete('/', async (req, res, next) => {
   }
 });
 
+// edit user
 router.patch('/', async (req, res, next) => {
   const id = req.userId;
   const {body} = req;
@@ -68,6 +70,7 @@ router.patch('/', async (req, res, next) => {
   }
 });
 
+// follow
 router.patch('/follow/:id', async (req, res, next) => {
   const {id: followed} = req.params;
   const {userId} = req;
@@ -79,6 +82,7 @@ router.patch('/follow/:id', async (req, res, next) => {
   }
 });
 
+// unfollow
 router.patch('/unfollow/:id', async (req, res, next) => {
   const {id: followed} = req.params;
   const {userId} = req;
