@@ -67,27 +67,26 @@ router.post('/', (req, res, next) => {
   });
 
   // parsing the request body
-  // form.parse(req, async (err, fields, files) => {
-  //   if (err) {
-  //     next(err);
-  //     return;
-  //   }
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
+    }
 
-  //   fields.author = userId; // add author field
-  //   fields.photos = []; // add photos field
+    fields.author = userId; // add author field
+    fields.photos = []; // add photos field
 
-  //   for (const file in files) {
-  //     fields.photos.push(files[file].toJSON().path); // adding images paths
-  //   }
+    for (const file in files) {
+      fields.photos.push(files[file].toJSON().path); // adding images paths
+    }
 
-  //   try {
-  //     const blog = await create(fields);
-  //     res.status(200).json(blog);
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // });
-  res.end();
+    try {
+      const blog = await create(fields);
+      res.status(200).json(blog);
+    } catch (error) {
+      next(error);
+    }
+  });
 });
 
 // edit a blog
