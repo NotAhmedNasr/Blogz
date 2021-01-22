@@ -1,7 +1,16 @@
 const Blog = require('../models/Blog');
+const User = require('../models/User');
 
-const getAll = async function() {
-  return await Blog.find().exec();
+const getAll = async function(page, count, query) {
+  return await Blog.find(query, {}, {skip: (+page * +count), limit: +count})
+      .sort([['updated_at', -1]]).exec();
+};
+
+const getFollowing = async function(id, page, count) {
+  const {following: followedUsers} = await User.findById(id, {following: 1});
+  return Blog.find({author: {$in: followedUsers}}, {},
+      {skip: (+page * +count), limit: +count})
+      .sort([['updated_at', -1]]).exec();
 };
 
 const create = function(blog) {
@@ -30,16 +39,19 @@ const deleteById = async function(blogId, userId) {
   return await Blog.findByIdAndDelete(blogId).exec();
 };
 
-const search = async function({title, tag}) {
-  if (title && tag) {
-    return await Blog.find({tags: tag, $text: {$search: title}}).exec();
-  } else if (title) {
-    return await Blog.find({$text: {$search: title}}).exec();
-  } else if (tag) {
-    return await Blog.find({tags: tag}).exec();
-  } else {
-    return await Blog.find().exec();
+const search = async function({title, tag, author, page, count}) {
+  const query = {};
+  if (title) {
+    query.$text = {$search: title};
   }
+  if (tag) {
+    query.tag = tag;
+  }
+  if (author) {
+    query.author = author;
+  }
+  return await Blog.find(query, {},
+      {skip: (+page * +count), limit: +count}).exec();
 };
 
 module.exports = {
@@ -48,4 +60,5 @@ module.exports = {
   edit,
   deleteById,
   search,
+  getFollowing,
 };

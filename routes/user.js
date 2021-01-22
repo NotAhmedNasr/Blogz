@@ -1,5 +1,7 @@
 const express = require('express');
-const {create, login, getUserById, deleteUserById, updateData} =
+const {
+  create, login, getUserById, deleteUserById, updateData, follow, unfollow,
+} =
   require('../controllers/user');
 const {checkIfUserLoggedIn} = require('../middlewares/Auth');
 
@@ -37,7 +39,7 @@ router.get('/:id', async (req, res, next) => {
   try {
     const user = await getUserById(id);
     if (!user) {
-      throw new Error('User doesn\'t exist');
+      throw new Error('NotFound');
     }
     res.status(200).json(user);
   } catch (error) {
@@ -61,6 +63,28 @@ router.patch('/', async (req, res, next) => {
   try {
     const updated = await updateData(id, body);
     res.status(200).json(updated);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/follow/:id', async (req, res, next) => {
+  const {id: followed} = req.params;
+  const {userId} = req;
+  try {
+    const result = await follow(userId, followed);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/unfollow/:id', async (req, res, next) => {
+  const {id: followed} = req.params;
+  const {userId} = req;
+  try {
+    const result = await unfollow(userId, followed);
+    res.json(result);
   } catch (error) {
     next(error);
   }

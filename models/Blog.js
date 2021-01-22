@@ -31,6 +31,7 @@ const blogSchema = new mongoose.Schema({
 
 blogSchema.index({'created_at': 1});
 blogSchema.index({'tags': 1});
+blogSchema.index({'author': 1});
 blogSchema.index({'title': 'text'});
 
 const blogModel = mongoose.model('Blog', blogSchema);

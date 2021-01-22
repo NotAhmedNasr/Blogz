@@ -1,8 +1,9 @@
+/* eslint-disable guard-for-in */
 const express = require('express');
 const formidable = require('formidable');
 const path = require('path');
 
-const {getAll, create, edit, deleteById, search} =
+const {getAll, create, edit, deleteById, search, getFollowing} =
   require('../controllers/blog');
 const {checkIfUserLoggedIn} = require('../middlewares/Auth');
 
@@ -11,8 +12,9 @@ const router = express.Router();
 
 // get all blogs for all users
 router.get('/', async (req, res, next) => {
+  const {query: {page, count}} = req;
   try {
-    const blogs = await getAll();
+    const blogs = await getAll(page, count);
     res.json(blogs);
   } catch (error) {
     next(error);
@@ -21,41 +23,103 @@ router.get('/', async (req, res, next) => {
 
 router.use(checkIfUserLoggedIn);
 
-// for uploading photos
-router.post('/upload', (req, res, next) => {
-  const form = formidable({multiples: true});
-  form.uploadDir = path.join(__dirname, '../private/uploads/images');
-  form.keepExtensions = true;
-  form.parse(req, (err, fields, files) => {
+// search for blogs
+router.get('/search', async (req, res, next) => {
+  const {query} = req;
+  try {
+    const results = await search(query);
+    res.status(200).json(results);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// get all blogs for followed users
+router.get('/following', async (req, res, next) => {
+  const {userId, query: {page, count}} = req;
+  try {
+    const blogs = await getFollowing(userId, page, count);
+    res.json(blogs);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// get own blogs
+router.get('/owned', async (req, res, next) => {
+  const {userId, query: {page, count}} = req;
+  try {
+    const blogs = await getAll(page, count, {author: userId});
+    res.json(blogs);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// new blog with images
+router.post('/', (req, res, next) => {
+  const {userId} = req;
+
+  const form = formidable({
+    multiples: true, // more than one file
+    uploadDir: path.join(__dirname, '../private/uploads/images'),
+    keepExtensions: true,
+  });
+
+  // parsing the request body
+  form.parse(req, async (err, fields, files) => {
     if (err) {
       next(err);
       return;
     }
-    res.status(200).send('Uploaded!!');
-  });
-});
 
-// make new blog
-router.post('/', async (req, res, next) => {
-  const {body, userId} = req;
-  body.author = userId;
-  try {
-    const blog = await create(body);
-    res.status(201).json(blog);
-  } catch (error) {
-    next(error);
-  }
+    fields.author = userId; // add author field
+    fields.photos = []; // add photos field
+
+    for (const file in files) {
+      fields.photos.push(files[file].toJSON().path); // adding images paths
+    }
+
+    try {
+      const blog = await create(fields);
+      res.status(200).json(blog);
+    } catch (error) {
+      next(error);
+    }
+  });
 });
 
 router.patch('/:id', async (req, res, next) => {
   const {id: blogId} = req.params;
-  const {body, userId} = req;
-  try {
-    const blog = await edit(body, blogId, userId);
-    res.status(200).json(blog);
-  } catch (error) {
-    next(error);
-  }
+  const {userId} = req;
+
+  const form = formidable({
+    multiples: true, // more than one file
+    uploadDir: path.join(__dirname, '../private/uploads/images'),
+    keepExtensions: true,
+  });
+
+  // parsing the request body
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
+    }
+
+    fields.author = userId; // add author field
+    fields.photos = []; // add photos field
+
+    for (const file in files) {
+      fields.photos.push(files[file].toJSON().path); // adding images paths
+    }
+
+    try {
+      const blog = await edit(fields, blogId, userId);
+      res.status(200).json(blog);
+    } catch (error) {
+      next(error);
+    }
+  });
 });
 
 router.delete('/:id', async (req, res, next) => {
@@ -69,14 +133,5 @@ router.delete('/:id', async (req, res, next) => {
   }
 });
 
-router.get('/search', async (req, res, next) => {
-  const {query} = req;
-  try {
-    const results = await search(query);
-    res.status(200).json(results);
-  } catch (error) {
-    next(error);
-  }
-});
 
 module.exports = router;
