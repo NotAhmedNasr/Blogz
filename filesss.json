@@ -1,0 +1,78 @@
+{
+    image1: File {
+      _events: [Object: null prototype
+        ] {},
+      _eventsCount: 0,
+      _maxListeners: undefined,
+      size: 197066,
+      path: 'D:\\ITI\\SD\\Node.js\\Blogz-project\\BLOGS\\Blogz\\private\\uploads\\images\\upload_4bb4770c46ba5ffd0169ef1714fa6258.jpg',
+      name: '19480-acer-aspire-series-1366x768-computer-wallpaper.jpg',
+      type: 'image/jpeg',
+      hash: null,
+      lastModifiedDate: 2021-01-22T09: 46: 05.347Z,
+      _writeStream: WriteStream {
+        _writableState: [WritableState
+            ],
+        _events: [Object: null prototype
+            ] {},
+        _eventsCount: 0,
+        _maxListeners: undefined,
+        path: 'D:\\ITI\\SD\\Node.js\\Blogz-project\\BLOGS\\Blogz\\private\\uploads\\images\\upload_4bb4770c46ba5ffd0169ef1714fa6258.jpg',
+        fd: null,
+        flags: 'w',
+        mode: 438,
+        start: undefined,
+        autoClose: true,
+        pos: undefined,
+        bytesWritten: 197066,
+        closed: true,
+            [Symbol(kFs)
+            ]: [Object
+            ],
+            [Symbol(kCapture)
+            ]: false,
+            [Symbol(kIsPerformingIO)
+            ]: false
+        },
+        [Symbol(kCapture)
+        ]: false
+    },
+    image2: File {
+      _events: [Object: null prototype
+        ] {},
+      _eventsCount: 0,
+      _maxListeners: undefined,
+      size: 514514,
+      path: 'D:\\ITI\\SD\\Node.js\\Blogz-project\\BLOGS\\Blogz\\private\\uploads\\images\\upload_44ddb89827d3b90b4232a4c018ec7f91.jpg',
+      name: 'Acer-Travelmate-Series-Wallpaper.jpg',
+      type: 'image/jpeg',
+      hash: null,
+      lastModifiedDate: 2021-01-22T09: 46: 05.356Z,
+      _writeStream: WriteStream {
+        _writableState: [WritableState
+            ],
+        _events: [Object: null prototype
+            ] {},
+        _eventsCount: 0,
+        _maxListeners: undefined,
+        path: 'D:\\ITI\\SD\\Node.js\\Blogz-project\\BLOGS\\Blogz\\private\\uploads\\images\\upload_44ddb89827d3b90b4232a4c018ec7f91.jpg',
+        fd: 4,
+        flags: 'w',
+        mode: 438,
+        start: undefined,
+        autoClose: true,
+        pos: undefined,
+        bytesWritten: 514514,
+        closed: false,
+            [Symbol(kFs)
+            ]: [Object
+            ],
+            [Symbol(kCapture)
+            ]: false,
+            [Symbol(kIsPerformingIO)
+            ]: false
+        },
+        [Symbol(kCapture)
+        ]: false
+    }
+}

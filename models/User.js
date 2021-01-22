@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  email: { // Must match the email pattern
+  email: {
     type: String,
     required: true,
     unique: true,
@@ -64,7 +64,9 @@ userSchema.pre('save', async function(next) {
 
 userSchema.pre('findOneAndUpdate', async function(next) {
   try {
-    this._update.password = await bcrypt.hash(this._update.password, 10);
+    if (this._update.password) {
+      this._update.password = await bcrypt.hash(this._update.password, 10);
+    }
     return next();
   } catch (error) {
     return next(error);

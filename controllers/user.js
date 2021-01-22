@@ -28,7 +28,6 @@ const login = async function({username, password}) {
   if (!user) {
     throw new Error('Unauthenticated');
   }
-  debugger;
   const validPassword = await user.validatePassword(password);
   if (!validPassword) {
     throw new Error('Unauthenticated');
@@ -48,10 +47,46 @@ const updateData = async function(id, data) {
   return await User.findByIdAndUpdate(id, data);
 };
 
+const follow = async function(followerId, followedId) {
+  try {
+    debugger;
+    const followerRes = await User.findByIdAndUpdate(
+        followerId, {$addToSet: {following: followedId}},
+        {new: true},
+    ).exec();
+    const followedRes = await User.findByIdAndUpdate(
+        followedId, {$addToSet: {followers: followerId}},
+        {new: true},
+    ).exec();
+    return {followerRes, followedRes};
+  } catch (error) {
+    throw error;
+  }
+};
+
+const unfollow = async function(followerId, followedId) {
+  try {
+    debugger;
+    const followerRes = await User.findByIdAndUpdate(
+        followerId, {$pull: {following: followedId}},
+        {new: true},
+    ).exec();
+    const followedRes = await User.findByIdAndUpdate(
+        followedId, {$pull: {followers: followerId}},
+        {new: true},
+    ).exec();
+    return {followerRes, followedRes};
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   create,
   login,
   getUserById,
   deleteUserById,
   updateData,
+  follow,
+  unfollow,
 };
