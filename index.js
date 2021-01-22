@@ -5,7 +5,9 @@ const cors = require('cors');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/Error');
 
-mongoose.connect('mongodb+srv://ahmedalinasr:0128115293Ali@anasritidb.s6k5s.mongodb.net/blogsDB?retryWrites=true&w=majority',
+const dburi = process.env.MONGODB_URI;
+
+mongoose.connect(dburi,
     {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
     .then(() => console.log('Database Connected Successfully'))
     .catch((err) => console.log(err));
