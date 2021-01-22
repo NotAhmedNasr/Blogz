@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 
 app.use(errorHandler);
 
-const {PORT = 3000} = process.env;
+const {PORT = 8000} = process.env;
 
 app.listen(PORT, () => {
   console.log(`Application is listening on http://localhost:${PORT}`);
