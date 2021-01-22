@@ -5,9 +5,9 @@ const cors = require('cors');
 const routes = require('./routes');
 const errorHandler = require('./middlewares/Error');
 
-const dbURI = process.env.DBURI;
+const uri = process.env.MONGODB_URI;
 
-mongoose.connect(dbURI,
+mongoose.connect(uri,
     {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
     .then(() => console.log('Database Connected Successfully'))
     .catch((err) => console.log(err));
