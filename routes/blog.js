@@ -60,36 +60,34 @@ router.get('/owned', async (req, res, next) => {
 router.post('/', (req, res, next) => {
   const {userId} = req;
 
-  try {
-    const form = formidable({
-      multiples: true, // more than one file
-      uploadDir: path.join(__dirname, '../private/uploads/images'),
-      keepExtensions: true,
-    });
-    // parsing the request body
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        next(err);
-        return;
-      }
+  const form = formidable({
+    multiples: true, // more than one file
+    uploadDir: path.join(__dirname, '../private/uploads/images'),
+    keepExtensions: true,
+  });
 
-      fields.author = userId; // add author field
-      fields.photos = []; // add photos field
+  // parsing the request body
+  // form.parse(req, async (err, fields, files) => {
+  //   if (err) {
+  //     next(err);
+  //     return;
+  //   }
 
-      for (const file in files) {
-        fields.photos.push(files[file].toJSON().path); // adding images paths
-      }
+  //   fields.author = userId; // add author field
+  //   fields.photos = []; // add photos field
 
-      try {
-        const blog = await create(fields);
-        res.status(200).json(blog);
-      } catch (error) {
-        next(error);
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
+  //   for (const file in files) {
+  //     fields.photos.push(files[file].toJSON().path); // adding images paths
+  //   }
+
+  //   try {
+  //     const blog = await create(fields);
+  //     res.status(200).json(blog);
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // });
+  res.end();
 });
 
 // edit a blog
