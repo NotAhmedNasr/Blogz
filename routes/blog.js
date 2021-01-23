@@ -75,7 +75,9 @@ router.post('/', (req, res, next) => {
 
     fields.author = userId; // add author field
     try { // parsing tags
-      fields.tags = JSON.parse(fields.tags);
+      if (fields.tags && fields.tags !== '') {
+        fields.tags = JSON.parse(fields.tags);
+      }
     } catch (error) {
       next(error);
     }
