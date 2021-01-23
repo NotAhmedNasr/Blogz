@@ -17,6 +17,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use('/static/images', express.static('private/uploads/images'));
+
 app.use('/', routes);
 
 app.use((req, res, next) => {
