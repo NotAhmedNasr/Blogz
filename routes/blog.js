@@ -74,6 +74,11 @@ router.post('/', (req, res, next) => {
     }
 
     fields.author = userId; // add author field
+    try { // parsing tags
+      fields.tags = JSON.parse(fields.tags);
+    } catch (error) {
+      next(error);
+    }
     fields.photos = []; // add photos field
 
     for (const file in files) {
