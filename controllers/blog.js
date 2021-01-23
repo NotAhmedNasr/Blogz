@@ -39,13 +39,13 @@ const deleteById = async function(blogId, userId) {
   return await Blog.findByIdAndDelete(blogId).exec();
 };
 
-const search = async function({title, tag, author, page, count}) {
+const search = async function({title, tags, author, page, count}) {
   const query = {};
   if (title) {
     query.$text = {$search: title};
   }
-  if (tag) {
-    query.tag = tag;
+  if (tags) {
+    query.tag = tags;
   }
   if (author) {
     query.author = author;
