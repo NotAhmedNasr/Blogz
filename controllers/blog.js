@@ -45,7 +45,7 @@ const search = async function({title, tags, author, page, count}) {
     query.$text = {$search: title};
   }
   if (tags) {
-    query.tag = tags;
+    query.tags = tags;
   }
   if (author) {
     query.author = author;
