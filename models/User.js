@@ -31,6 +31,9 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
+  profilePicture: {
+    type: String,
+  },
   following: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

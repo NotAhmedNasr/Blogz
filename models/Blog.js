@@ -10,7 +10,7 @@ const blogSchema = new mongoose.Schema({
   body: {
     type: String,
   },
-  photos: [String],
+  photos: String,
   tags: [String],
   author: {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,6 +20,13 @@ const blogSchema = new mongoose.Schema({
   likers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+  }],
+  comments: [{
+    content: String,
+    commenter: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   }],
 },
 {
