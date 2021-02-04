@@ -1,16 +1,22 @@
-const Blog = require('../models/Blog');
+const {blogModel: Blog, commentModel: Comment} = require('../models/Blog');
 const User = require('../models/User');
 
 const getAll = async function(page, count, query) {
   return await Blog.find(query, {}, {skip: (+page * +count), limit: +count})
-      .sort([['updated_at', -1]]).exec();
+      .populate('author')
+      .populate('comments')
+      .sort([['updated_at', -1]])
+      .exec();
 };
 
 const getFollowing = async function(id, page, count) {
   const {following: followedUsers} = await User.findById(id, {following: 1});
   return Blog.find({author: {$in: followedUsers}}, {},
       {skip: (+page * +count), limit: +count})
-      .sort([['updated_at', -1]]).exec();
+      .populate('author')
+      .populate('comments')
+      .sort([['updated_at', -1]])
+      .exec();
 };
 
 const create = function(blog) {
@@ -51,11 +57,34 @@ const search = async function({title, tags, author, page, count}) {
     query.author = author;
   }
   return await Blog.find(query, {},
-      {skip: (+page * +count), limit: +count}).exec();
+      {skip: (+page * +count), limit: +count})
+      .populate('author')
+      .populate('comments')
+      .exec();
 };
 
-const like = async function(update, id) {
-  return await Blog.findByIdAndUpdate(id, update).exec();
+const like = async function(user, id) {
+  return await Blog.findByIdAndUpdate(id, {$addToSet: {likers: user}}).exec();
+};
+
+const unlike = async function(user, id) {
+  return await Blog.findByIdAndUpdate(id, {$pull: {likers: user}}).exec();
+};
+
+const comment = async function(body, blogId) {
+  try {
+    const comm = await Comment.create(body);
+    return await Blog.
+        findByIdAndUpdate(blogId, {$push: {comments: comm}}).exec();
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const uncomment = async function(comId, blogId) {
+  await Comment.findByIdAndRemove(comId).exec();
+  return await Blog.findByIdAndUpdate(
+      blogId, {$pull: {comments: comId}}).exec();
 };
 
 module.exports = {
@@ -66,4 +95,7 @@ module.exports = {
   search,
   getFollowing,
   like,
+  unlike,
+  comment,
+  uncomment,
 };

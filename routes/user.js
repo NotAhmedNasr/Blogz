@@ -2,6 +2,7 @@ const express = require('express');
 
 const {
   create, login, getUserById, deleteUserById, updateData, follow, unfollow,
+  getAll,
 } = require('../controllers/user');
 const {checkIfUserLoggedIn} = require('../middlewares/Auth');
 
@@ -26,6 +27,18 @@ router.post('/login', async (req, res, next) => {
   try {
     const user = await login(body);
     res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/', async (req, res, next) => {
+  try {
+    const users = await getAll();
+    if (!users) {
+      throw new Error('NotFound');
+    }
+    res.status(200).json(users);
   } catch (error) {
     next(error);
   }
@@ -74,11 +87,15 @@ router.patch('/', async (req, res, next) => {
 router.patch('/follow/:id', async (req, res, next) => {
   const {id: followed} = req.params;
   const {userId} = req;
-  try {
-    const result = await follow(userId, followed);
-    res.json(result);
-  } catch (error) {
-    next(error);
+  if (followed != userId) {
+    try {
+      const result = await follow(userId, followed);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    res.status(200).send({});
   }
 });
 

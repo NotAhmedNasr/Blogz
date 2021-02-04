@@ -3,7 +3,8 @@ const express = require('express');
 const formidable = require('formidable');
 const path = require('path');
 
-const {getAll, create, edit, deleteById, search, getFollowing, like} =
+const {getAll, create, edit, deleteById, search, getFollowing,
+  like, unlike, comment, uncomment} =
   require('../controllers/blog');
 const {checkIfUserLoggedIn} = require('../middlewares/Auth');
 
@@ -146,7 +147,7 @@ router.delete('/:id', async (req, res, next) => {
 router.patch('/like/:id', async (req, res, next) => {
   const {userId, params: {id: blogId}} = req;
   try {
-    const blog = await like({$addToSet: {likers: userId}}, blogId);
+    const blog = await like(userId, blogId);
     res.status(200).json(blog);
   } catch (error) {
     next(error);
@@ -157,7 +158,31 @@ router.patch('/like/:id', async (req, res, next) => {
 router.patch('/unlike/:id', async (req, res, next) => {
   const {userId, params: {id: blogId}} = req;
   try {
-    const blog = await like({$pull: {likers: userId}}, blogId);
+    const blog = await unlike(userId, blogId);
+    res.status(200).json(blog);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/comment/:id', async (req, res, next) => {
+  const {userId, params: {id: blogId}} = req;
+  const {body} = req;
+
+  try {
+    const blog = await comment({...body, commenter: userId}, blogId);
+    res.status(200).json(blog);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/uncomment/:id', async (req, res, next) => {
+  const {params: {id: blogId}} = req;
+  const {commentId} = req.body;
+
+  try {
+    const blog = await uncomment(commentId, blogId);
     res.status(200).json(blog);
   } catch (error) {
     next(error);

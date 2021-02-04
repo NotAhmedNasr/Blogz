@@ -10,7 +10,9 @@ const blogSchema = new mongoose.Schema({
   body: {
     type: String,
   },
-  photos: String,
+  photo: {
+    type: String,
+  },
   tags: [String],
   author: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,11 +24,8 @@ const blogSchema = new mongoose.Schema({
     ref: 'User',
   }],
   comments: [{
-    content: String,
-    commenter: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment',
   }],
 },
 {
@@ -43,4 +42,27 @@ blogSchema.index({'title': 'text'});
 
 const blogModel = mongoose.model('Blog', blogSchema);
 
-module.exports = blogModel;
+const commentSchema = new mongoose.Schema({
+  content: {
+    type: String,
+  },
+  commenter: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+}, {
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+  },
+});
+
+commentSchema.index({'created_at': 1});
+
+const commentModel = mongoose.model('Comment', commentSchema);
+
+
+module.exports = {
+  blogModel,
+  commentModel,
+};

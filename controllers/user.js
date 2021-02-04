@@ -20,7 +20,7 @@ const create = async function(newUser) {
 const signUserWithJwt = async function(user) {
   const token = await asyncSign({
     id: user.id,
-  }, SECRET.secret, {expiresIn: '1h'});
+  }, SECRET.secret, {expiresIn: '1d'});
   return {...user.toJSON(), token};
 };
 
@@ -38,6 +38,10 @@ const login = async function({username, password}) {
 
 const getUserById = async function(id) {
   return await User.findById(id).exec();
+};
+
+const getAll = async function() {
+  return await User.find().exec();
 };
 
 const deleteUserById = async function(id) {
@@ -90,4 +94,5 @@ module.exports = {
   updateData,
   follow,
   unfollow,
+  getAll,
 };

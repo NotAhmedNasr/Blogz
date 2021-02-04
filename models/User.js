@@ -17,7 +17,13 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  fullname: {
+  firstname: {
+    type: String,
+    maxlength: 50,
+    minlength: 2,
+    required: true,
+  },
+  lastname: {
     type: String,
     maxlength: 50,
     minlength: 2,
@@ -42,7 +48,6 @@ const userSchema = new mongoose.Schema({
   toJSON: {
     transform: function(doc, ret, options) {
       delete ret.password;
-      delete ret._id;
       return ret;
     },
   },
