@@ -2,7 +2,7 @@ const express = require('express');
 
 const {
   create, login, getUserById, deleteUserById, updateData, follow, unfollow,
-  getAll,
+  getAll, getUserByusername,
 } = require('../controllers/user');
 const {checkIfUserLoggedIn} = require('../middlewares/Auth');
 
@@ -45,6 +45,21 @@ router.get('/', async (req, res, next) => {
 });
 
 router.use(checkIfUserLoggedIn);
+
+// get user by username
+
+router.get('/byname/:username?', async (req, res, next) => {
+  const {username} = req.params;
+  try {
+    const user = await getUserByusername(username);
+    if (!user) {
+      throw new Error('NotFound');
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // get user by id
 router.get('/:id', async (req, res, next) => {

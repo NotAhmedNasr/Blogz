@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const User = require('../models/User');
+const {blogModel: Blog, commentModel: Comment} = require('../models/Blog');
 const {promisify} = require('util');
 const jwt = require('jsonwebtoken');
 
@@ -40,16 +41,23 @@ const getUserById = async function(id) {
   return await User.findById(id).exec();
 };
 
+const getUserByusername = async function(username) {
+  return await User.findOne({username: {$regex: '.*' + username + '.*'}})
+      .exec();
+};
+
 const getAll = async function() {
   return await User.find().exec();
 };
 
 const deleteUserById = async function(id) {
+  await Blog.deleteMany({author: id}).exec();
+  await Comment.deleteMany({commenter: id}).exec();
   return await User.findByIdAndDelete(id).exec();
 };
 
 const updateData = async function(id, data) {
-  return await User.findByIdAndUpdate(id, data);
+  return await User.findByIdAndUpdate(id, data, {new: true});
 };
 
 const follow = async function(followerId, followedId) {
@@ -95,4 +103,5 @@ module.exports = {
   follow,
   unfollow,
   getAll,
+  getUserByusername,
 };

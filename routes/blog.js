@@ -1,7 +1,5 @@
 /* eslint-disable guard-for-in */
 const express = require('express');
-const formidable = require('formidable');
-const path = require('path');
 
 const {getAll, create, edit, deleteById, search, getFollowing,
   like, unlike, comment, uncomment} =
@@ -58,77 +56,28 @@ router.get('/owned', async (req, res, next) => {
 });
 
 // new blog with images
-router.post('/', (req, res, next) => {
-  const {userId} = req;
-
-  const form = formidable({
-    multiples: true, // more than one file
-    uploadDir: path.join(__dirname, '../private/uploads/images'),
-    keepExtensions: true,
-  });
-
-  // parsing the request body
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      next(err);
-      return;
-    }
-
-    fields.author = userId; // add author field
-    try { // parsing tags
-      if (fields.tags && fields.tags !== '') {
-        fields.tags = JSON.parse(fields.tags);
-      }
-    } catch (error) {
-      next(error);
-    }
-    fields.photos = []; // add photos field
-
-    for (const file in files) {
-      fields.photos.push(files[file].toJSON().path); // adding images paths
-    }
-
-    try {
-      const blog = await create(fields);
-      res.status(200).json(blog);
-    } catch (error) {
-      next(error);
-    }
-  });
+router.post('/', async (req, res, next) => {
+  const {userId, body} = req;
+  body.author = userId;
+  try {
+    const blog = await create(body);
+    res.status(200).json(blog);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // edit a blog
 router.patch('/:id', async (req, res, next) => {
   const {id: blogId} = req.params;
-  const {userId} = req;
+  const {userId, body} = req;
 
-  const form = formidable({
-    multiples: true, // more than one file
-    uploadDir: path.join(__dirname, '../private/uploads/images'),
-    keepExtensions: true,
-  });
-
-  // parsing the request body
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      next(err);
-      return;
-    }
-
-    fields.author = userId; // add author field
-    fields.photos = []; // add photos field
-
-    for (const file in files) {
-      fields.photos.push(files[file].toJSON().path); // adding images paths
-    }
-
-    try {
-      const blog = await edit(fields, blogId, userId);
-      res.status(200).json(blog);
-    } catch (error) {
-      next(error);
-    }
-  });
+  try {
+    const blog = await edit(body, blogId, userId);
+    res.status(200).json(blog);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // delete blog
@@ -168,7 +117,6 @@ router.patch('/unlike/:id', async (req, res, next) => {
 router.patch('/comment/:id', async (req, res, next) => {
   const {userId, params: {id: blogId}} = req;
   const {body} = req;
-
   try {
     const blog = await comment({...body, commenter: userId}, blogId);
     res.status(200).json(blog);

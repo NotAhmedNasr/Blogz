@@ -4,8 +4,13 @@ const User = require('../models/User');
 const getAll = async function(page, count, query) {
   return await Blog.find(query, {}, {skip: (+page * +count), limit: +count})
       .populate('author')
-      .populate('comments')
-      .sort([['updated_at', -1]])
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'commenter',
+        },
+      })
+      .sort([['created_at', -1]])
       .exec();
 };
 
@@ -14,8 +19,13 @@ const getFollowing = async function(id, page, count) {
   return Blog.find({author: {$in: followedUsers}}, {},
       {skip: (+page * +count), limit: +count})
       .populate('author')
-      .populate('comments')
-      .sort([['updated_at', -1]])
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'commenter',
+        },
+      })
+      .sort([['created_at', -1]])
       .exec();
 };
 
@@ -59,23 +69,40 @@ const search = async function({title, tags, author, page, count}) {
   return await Blog.find(query, {},
       {skip: (+page * +count), limit: +count})
       .populate('author')
-      .populate('comments')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'commenter',
+        },
+      })
+      .sort([['created_at', -1]])
       .exec();
 };
 
 const like = async function(user, id) {
-  return await Blog.findByIdAndUpdate(id, {$addToSet: {likers: user}}).exec();
+  return await Blog.findByIdAndUpdate(
+      id, {$addToSet: {likers: user}}, {new: true})
+      .exec();
 };
 
 const unlike = async function(user, id) {
-  return await Blog.findByIdAndUpdate(id, {$pull: {likers: user}}).exec();
+  return await Blog.findByIdAndUpdate(id, {$pull: {likers: user}}, {new: true})
+      .exec();
 };
 
 const comment = async function(body, blogId) {
   try {
     const comm = await Comment.create(body);
-    return await Blog.
-        findByIdAndUpdate(blogId, {$push: {comments: comm}}).exec();
+    return await Blog
+        .findByIdAndUpdate(blogId, {$push: {comments: comm}}, {new: true})
+        .populate('author')
+        .populate({
+          path: 'comments',
+          populate: {
+            path: 'commenter',
+          },
+        })
+        .exec();
   } catch (error) {
     throw new Error(error);
   }
@@ -84,7 +111,15 @@ const comment = async function(body, blogId) {
 const uncomment = async function(comId, blogId) {
   await Comment.findByIdAndRemove(comId).exec();
   return await Blog.findByIdAndUpdate(
-      blogId, {$pull: {comments: comId}}).exec();
+      blogId, {$pull: {comments: comId}}, {new: true})
+      .populate('author')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'commenter',
+        },
+      })
+      .exec();
 };
 
 module.exports = {
