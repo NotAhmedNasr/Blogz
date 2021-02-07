@@ -46,8 +46,9 @@ const getUserByusername = async function(username) {
       .exec();
 };
 
-const getAll = async function() {
-  return await User.find().exec();
+const getAll = async function(page, count) {
+  return await User.find({}, {}, {skip: (+page * +count), limit: +count})
+      .exec();
 };
 
 const deleteUserById = async function(id) {

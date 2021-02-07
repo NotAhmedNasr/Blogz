@@ -33,8 +33,9 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.get('/', async (req, res, next) => {
+  const {query: {page, count}} = req;
   try {
-    const users = await getAll();
+    const users = await getAll(page, count);
     if (!users) {
       throw new Error('NotFound');
     }
