@@ -1,5 +1,4 @@
-// const fs = require('fs');
-// const path = require('path');
+
 const User = require('../models/User');
 const {blogModel: Blog, commentModel: Comment} = require('../models/Blog');
 const {promisify} = require('util');
@@ -9,10 +8,6 @@ const asyncSign = promisify(jwt.sign);
 
 // jwt secret
 const {SECRET} = process.env;
-// JSON.parse(fs.readFileSync(
-//     path.join(__dirname, '..', 'private', 'secrets', 'secret.json'),
-//     {encoding: 'utf8'},
-// ));
 
 const create = async function(newUser) {
   const user = await User.create(newUser);

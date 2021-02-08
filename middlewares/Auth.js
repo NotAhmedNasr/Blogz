@@ -1,13 +1,7 @@
 const jwt = require('jsonwebtoken');
-// const fs = require('fs');
-// const path = require('path');
 const {promisify} = require('util');
 
 const {SECRET} = process.env;
-// const SECRET = JSON.parse(fs.readFileSync(
-//     path.join(__dirname, '..', 'private', 'secrets', 'secret.json'),
-//     {encoding: 'utf8'},
-// )).secret;
 
 const verifyAsync = promisify(jwt.verify);
 
