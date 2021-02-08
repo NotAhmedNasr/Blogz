@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+// const fs = require('fs');
+// const path = require('path');
 const User = require('../models/User');
 const {blogModel: Blog, commentModel: Comment} = require('../models/Blog');
 const {promisify} = require('util');
@@ -8,10 +8,11 @@ const jwt = require('jsonwebtoken');
 const asyncSign = promisify(jwt.sign);
 
 // jwt secret
-const SECRET = JSON.parse(fs.readFileSync(
-    path.join(__dirname, '..', 'private', 'secrets', 'secret.json'),
-    {encoding: 'utf8'},
-));
+const {SECRET} = process.env;
+// JSON.parse(fs.readFileSync(
+//     path.join(__dirname, '..', 'private', 'secrets', 'secret.json'),
+//     {encoding: 'utf8'},
+// ));
 
 const create = async function(newUser) {
   const user = await User.create(newUser);
@@ -21,7 +22,7 @@ const create = async function(newUser) {
 const signUserWithJwt = async function(user) {
   const token = await asyncSign({
     id: user.id,
-  }, SECRET.secret, {expiresIn: '1d'});
+  }, SECRET, {expiresIn: '1d'});
   return {...user.toJSON(), token};
 };
 
