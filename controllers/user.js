@@ -53,7 +53,7 @@ const getAll = async function(page, count, id, following, followers) {
     if (followers) {
       searchPool = user.followers;
     }
-    filters = {id: {$in: searchPool}};
+    filters = {_id: {$in: searchPool}};
   }
   return await User.find(filters, {}, {skip: (+page * +count), limit: +count})
       .exec();
