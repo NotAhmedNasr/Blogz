@@ -43,7 +43,7 @@ const getUserByusername = async function(username) {
 };
 
 const getAll = async function(page, count, id, following, followers) {
-  const filters = {};
+  let filters = {};
   if (followers || following) {
     const user = await getUserById(id);
     let searchPool;
