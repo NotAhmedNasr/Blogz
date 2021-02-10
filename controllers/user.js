@@ -42,8 +42,20 @@ const getUserByusername = async function(username) {
       .exec();
 };
 
-const getAll = async function(page, count) {
-  return await User.find({}, {}, {skip: (+page * +count), limit: +count})
+const getAll = async function(page, count, id, following, followers) {
+  const filters = {};
+  if (followers || following) {
+    const user = await getUserById(id);
+    let searchPool;
+    if (following) {
+      searchPool = user.following;
+    }
+    if (followers) {
+      searchPool = user.followers;
+    }
+    filters = {id: {$in: searchPool}};
+  }
+  return await User.find(filters, {}, {skip: (+page * +count), limit: +count})
       .exec();
 };
 

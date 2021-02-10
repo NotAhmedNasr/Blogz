@@ -32,10 +32,15 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
+
+router.use(checkIfUserLoggedIn);
+
+// get all users
 router.get('/', async (req, res, next) => {
-  const {query: {page, count}} = req;
+  const {query: {page, count, following, followers}} = req;
+  const id = req.userId;
   try {
-    const users = await getAll(page, count);
+    const users = await getAll(page, count, id, following, followers);
     if (!users) {
       throw new Error('NotFound');
     }
@@ -44,8 +49,6 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
-
-router.use(checkIfUserLoggedIn);
 
 // get user by username
 
